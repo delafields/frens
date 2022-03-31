@@ -103,7 +103,7 @@ export default function Home() {
 
       <main 
         style={{background: 'hsl(328deg 58% 94%)' }}
-        className="w-screen min-h-full box-border flex flex-col pt-4 font-kiddie"
+        className="w-screen min-h-full h-screen box-border flex flex-col pt-4 font-kiddie"
         >
         <h1 className="m-0 text-6xl text-center mb-10">
           frens🐸
@@ -112,12 +112,12 @@ export default function Home() {
 
         <div className="grow flex justify-center align-center max-w-full">
           { !currentAccount ?
-            <button 
-              className="bg-red-200"
-              onClick={() => setCurrentAccount("Whatever")}
-            >
-              click 2 sign in fam
-            </button>
+              <button 
+                className="rounded bg-red-200 hover:bg-slate-100 h-10 px-2 self-center"
+                onClick={() => setCurrentAccount("Whatever")}
+              >
+                click 2 sign in fam
+              </button>
             : 
             <div 
               style={{background: '#f8e7f1',
@@ -156,6 +156,7 @@ export default function Home() {
               {friends.map((friend) =>
                 <div 
                   className="flex mb-6 p-4 rounded bg-white/[.4]"
+                  key={friend.address}
                   >
                   <QRCode size={150} value={friend.address} />
                   <div className="flex flex-col items-center justify-around grow">
@@ -169,7 +170,7 @@ export default function Home() {
                         {friend.address.substring(0, 4) + '..' + friend.address.substring(40, 42)}
                       </h6>
                       <button 
-                        className="bg-white rounded p-px sm:p-1 border-2 border-black hover:bg-slate-100"
+                        className="bg-white rounded px-1 sm:p-1 border-2 border-black hover:bg-slate-100"
                         onClick={() =>  navigator.clipboard.writeText(friend.address)}
                       >
                         👈 copy
