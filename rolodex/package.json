@@ -1,0 +1,31 @@
+{
+  "name": "rolodex",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.4",
+    "ethers": "^5.6.2",
+    "next": "12.1.2",
+    "postcss": "^8.4.12",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-hook-form": "^7.29.0",
+    "react-qr-code": "^2.0.3",
+    "tailwindcss": "^3.0.23"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.0",
+    "@nomiclabs/hardhat-waffle": "^2.0.0",
+    "chai": "^4.2.0",
+    "eslint": "8.12.0",
+    "eslint-config-next": "12.1.2",
+    "ethereum-waffle": "^3.0.0",
+    "hardhat": "^2.9.2"
+  }
+}
