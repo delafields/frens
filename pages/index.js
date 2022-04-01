@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { ethers, providers } from "ethers";
 import QRCode from "react-qr-code";
 import { useForm } from "react-hook-form";
+import toast, { Toaster } from 'react-hot-toast';
 
 const tempFriends = [
   {"name": "Scalanis Magharice", "pubkey": "0x389BE126c3500e9eaC4d0596Ae1C84a39AD91288"},
@@ -22,8 +23,16 @@ const CONTRACT_ADDRESS = "0x950EEf2c71c85F0015FC01c1540632DeeF2b8fA1";
 export default function Home() {  
   const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm();
   const [currentAccount, setCurrentAccount] = useState(null);
-  const [friends, setFriends] = useState(tempFriends);
+  const [currentChainId, setCurrentChainId] = useState('');
+  const [friends, setFriends] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const filterFrens = (receipt) => {
+    const frenList = receipt.events.find(event => event.event === "FrenListUpdated").args._frenlist;
+    frenList = frenList.filter(fren => fren.pubkey != '0x0000000000000000000000000000000000000000');
+    console.log('filtered frens', frenList);
+    return frenList;
+  }
 
   const onSubmit = async newFriend => {
     const provider = new ethers.providers.Web3Provider(ethereum);
@@ -33,9 +42,9 @@ export default function Home() {
     console.log("adding fren");
     let tx = await contract.addfren(newFriend.address, newFriend.name);
     const rc = await tx.wait();
-    const frenList = rc.events.find(event => event.event === "FrenListUpdated")
-    console.log(frenList.args._frenlist)
-    setFriends(frenList.args._frenlist)
+
+    let frenList = filterFrens(rc);
+    setFriends(frenList)
 
     resetField("name")
     resetField("address")
@@ -50,10 +59,9 @@ export default function Home() {
     console.log("removing fren");
     let tx = await contract.removefren(address);
     const rc = await tx.wait();
-    const frenList = rc.events.find(event => event.event === "FrenListUpdated");
+
     // filter out zeroed out frens
-    frenList = frenList.args._frenlist.filter(fren => fren.pubkey != '0x0000000000000000000000000000000000000000');
-    console.log(frenList)
+    let frenList = filterFrens(rc);
     setFriends(frenList)
   };
 
@@ -62,28 +70,32 @@ export default function Home() {
       const { ethereum } = window;
 
       if (!ethereum) {
-        alert("you need metamask for this to work");
+        toast("you need metamask for this to work", { icon: "🦊" });
         return;
       }
 
-      const chainId = await ethereum.request({ method: 'eth_chainId' })
-      console.log(chainId)
+      let chainId = await ethereum.request({ method: 'eth_chainId' })
+      console.log('chainId', chainId)
 
       if (chainId !== '0x4') {
-        alert("i only works on rinkeby")
+        toast("i only works on rinkeby", { icon: "🐸" })
         // switch user to rinkeby
         await switchNetwork();
       }
 
-      const accounts = await ethereum.request({ method: "eth_requestAccounts"});
+      chainId = await ethereum.request({ method: 'eth_chainId' })
 
-      console.log("Connected to", accounts[0]);
-      setCurrentAccount(accounts[0]);
+      // only load friends if the user is on rinkeby
+      if (chainId === "0x4") {
+        const accounts = await ethereum.request({ method: "eth_requestAccounts"});
+        setCurrentAccount(accounts[0]);
+        console.log("Connected to", accounts[0]);
 
-      // load friends
-      setLoading(true);
-      loadFriends();
-      setLoading(false);
+        // load friends
+        setLoading(true);
+        loadFriends();
+        setLoading(false);
+      }
 
     } catch (error) {
       console.log(error)
@@ -101,10 +113,14 @@ export default function Home() {
         console.log("Creating a record for this user if they're new...");
         let tx = await contract.createOrFindNewUser();
         const rc = await tx.wait();
-        const frenList = rc.events.find(event => event.event === "FrenListUpdated")
-        console.log(frenList.args._frenlist)
+        
 
-        setFriends(frenList.args._frenlist)
+        // const frenList = rc.events.find(event => event.event === "FrenListUpdated").args._frenlist;
+        // console.log(frenList)
+        // frenList = frenList.filter(fren => fren.pubkey != '0x0000000000000000000000000000000000000000');
+        // console.log(frenList)
+        let frenList = filterFrens(rc);
+        setFriends(frenList)
       }
     } catch(error) {
       console.error(error);
@@ -120,7 +136,7 @@ export default function Home() {
   				params: [{ chainId: '0x4' }], // Check networks.js for hexadecimal network ids
   			});
   		} catch (error) {
-        console.log(error);
+        console.log('didnt wanna use rinkeby :(', error);
       }
     }
   }
@@ -130,7 +146,10 @@ export default function Home() {
       <Head>
         <title>Frens</title>
         <meta name="description" content="Together on chain 4ever" />
-        <link rel="icon" href="/favicon.ico" />
+        <link
+          rel="icon"
+          href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐸</text></svg>"
+        />
       </Head>
 
       <main 
@@ -143,14 +162,14 @@ export default function Home() {
 
 
         <div className="grow flex justify-center align-center max-w-full">
-          { !currentAccount ?
-              <button 
-                className="rounded bg-red-200 hover:bg-slate-100 h-10 px-2 self-center"
-                // onClick={() => setCurrentAccount("Whatever")}
-                onClick={() => connectWallet()}
-              >
-                click 2 sign in fam
-              </button>
+          { !currentAccount 
+            ?
+            <button 
+              className="rounded bg-red-200 hover:bg-slate-100 h-10 px-2 self-center"
+              onClick={() => connectWallet()}
+            >
+              click 2 sign in fam
+            </button>
             : 
             <div 
               style={{background: '#f8e7f1',
@@ -223,6 +242,7 @@ export default function Home() {
           }
         </div>
       </main>
+      <Toaster />
     </div>
   )
 }

@@ -1,15 +1,10 @@
-# Basic Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+TODO
+* Filter out zero addressed accounts
+* Let the user know they're either being given a record or fetching friends when signing in
+* Loading UI for
+  * Adding frens
+  * Removing frens
+* UI for failed friend additions
+* UI for failed fren removals
+* Clean up client code 
+* Clean up contract
