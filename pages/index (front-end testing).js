@@ -7,126 +7,94 @@ import QRCode from "react-qr-code";
 import { useForm } from "react-hook-form";
 
 const tempFriends = [
-  {"name": "Scalanis Magharice", "pubkey": "0x389BE126c3500e9eaC4d0596Ae1C84a39AD91288"},
-  {"name": "Bellas Farbella", "pubkey": "0x85A52a4084ad1384C79a387406Efb7D1bF4FA404"},
-  {"name": "Paeris Miraric", "pubkey": "0x0e77b5d4EA1BE383D597CFf66D6A710eba7f6893"},
-  {"name": "Jandar Ravawarin", "pubkey": "0x0ABD28902B4577880031E664F1A0B39d9E259769"},
-  {"name": "Laiex Krisgwyn", "pubkey": "0x4B44703de91c6e81b97Ea2eF2ce9d203b7877B01"},
-  {"name": "Folmer Erxidor", "pubkey": "0xf2c3Ca4B7a970D92466C3a47849B760C6840477b"},
-  {"name": "Ailre Torrona", "pubkey": "0x6B8B38B8Cc006d282E442f34Af48266916C3bEc1"},
+  {"name": "Scalanis Magharice", "address": "0x389BE126c3500e9eaC4d0596Ae1C84a39AD91288"},
+  {"name": "Bellas Farbella", "address": "0x85A52a4084ad1384C79a387406Efb7D1bF4FA404"},
+  {"name": "Paeris Miraric", "address": "0x0e77b5d4EA1BE383D597CFf66D6A710eba7f6893"},
+  {"name": "Jandar Ravawarin", "address": "0x0ABD28902B4577880031E664F1A0B39d9E259769"},
+  {"name": "Laiex Krisgwyn", "address": "0x4B44703de91c6e81b97Ea2eF2ce9d203b7877B01"},
+  {"name": "Folmer Erxidor", "address": "0xf2c3Ca4B7a970D92466C3a47849B760C6840477b"},
+  {"name": "Ailre Torrona", "address": "0x6B8B38B8Cc006d282E442f34Af48266916C3bEc1"},
 ]
 
-import contractAbi from '../utils/Frens.json';
-const CONTRACT_ADDRESS = "0x950EEf2c71c85F0015FC01c1540632DeeF2b8fA1";
-
-export default function Home() {  
-  const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm();
+export default function Home() {
+  // TODO: Add render logic for no metamask
   const [currentAccount, setCurrentAccount] = useState(null);
-  const [friends, setFriends] = useState(tempFriends);
-  const [loading, setLoading] = useState(false);
-
-  const onSubmit = async newFriend => {
-    const provider = new ethers.providers.Web3Provider(ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
-
-    console.log("adding fren");
-    let tx = await contract.addfren(newFriend.address, newFriend.name);
-    const rc = await tx.wait();
-    const frenList = rc.events.find(event => event.event === "FrenListUpdated")
-    console.log(frenList.args._frenlist)
-    setFriends(frenList.args._frenlist)
-
+  const [friends, setFriends] = useState(tempFriends);  
+  const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm();
+  
+  const onSubmit = newFriend => {
+    friends.push(newFriend)
+    setFriends(friends)
     resetField("name")
     resetField("address")
   };
 
-  const deleteFriend = async address => {
-    // setFriends(friends.filter(friend => friend.address != address));
-    const provider = new ethers.providers.Web3Provider(ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
-
-    console.log("removing fren");
-    let tx = await contract.removefren(address);
-    const rc = await tx.wait();
-    const frenList = rc.events.find(event => event.event === "FrenListUpdated");
-    // filter out zeroed out frens
-    frenList = frenList.args._frenlist.filter(fren => fren.pubkey != '0x0000000000000000000000000000000000000000');
-    console.log(frenList)
-    setFriends(frenList)
-  };
+  const deleteFriend = address => {
+    setFriends(friends.filter(friend => friend.address != address));
+  }
 
   const connectWallet = async () => {
+    
     try {
       const { ethereum } = window;
 
       if (!ethereum) {
-        alert("you need metamask for this to work");
+        alert("Get MetaMask!");
         return;
-      }
-
-      const chainId = await ethereum.request({ method: 'eth_chainId' })
-      console.log(chainId)
-
-      if (chainId !== '0x4') {
-        alert("i only works on rinkeby")
-        // switch user to rinkeby
-        await switchNetwork();
       }
 
       const accounts = await ethereum.request({ method: "eth_requestAccounts"});
 
       console.log("Connected to", accounts[0]);
-      setCurrentAccount(accounts[0]);
-
-      // load friends
-      setLoading(true);
-      loadFriends();
-      setLoading(false);
-
+      setCurrentAccount(accounts[0]);      
     } catch (error) {
       console.log(error)
-    }
-  }
-
-  const loadFriends = async () => {
-    try {
-      const { ethereum } = window;
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const contract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
-
-        console.log("Creating a record for this user if they're new...");
-        let tx = await contract.createOrFindNewUser();
-        const rc = await tx.wait();
-        const frenList = rc.events.find(event => event.event === "FrenListUpdated")
-        console.log(frenList.args._frenlist)
-
-        setFriends(frenList.args._frenlist)
-      }
-    } catch(error) {
-      console.error(error);
     }
   }
 
   const switchNetwork = async () => {
   	if (window.ethereum) {
   		try {
-  			// Try to switch to the rinkeby testnet
+  			// Try to switch to the Mumbai testnet
   			await window.ethereum.request({
   				method: 'wallet_switchEthereumChain',
-  				params: [{ chainId: '0x4' }], // Check networks.js for hexadecimal network ids
+  				params: [{ chainId: '0x13881' }], // Check networks.js for hexadecimal network ids
   			});
   		} catch (error) {
-        console.log(error);
-      }
-    }
+  			// This error code means that the chain we want has not been added to MetaMask
+  			// In this case we ask the user to add it to their MetaMask
+  			if (error.code === 4902) {
+  				try {
+  					await window.ethereum.request({
+  						method: 'wallet_addEthereumChain',
+  						params: [
+  							{	
+  								chainId: '0x13881',
+  								chainName: 'Polygon Mumbai Testnet',
+  								rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+  								nativeCurrency: {
+  										name: "Mumbai Matic",
+  										symbol: "MATIC",
+  										decimals: 18
+  								},
+  								blockExplorerUrls: ["https://mumbai.polygonscan.com/"]
+  							},
+  						],
+  					});
+  				} catch (error) {
+  					console.log(error);
+  				}
+  			}
+  			console.log(error);
+  		}
+  	} else {
+  		// If window.ethereum is not found then MetaMask is not installed
+  		alert('MetaMask is not installed. Please install it to use this app: https://metamask.io/download.html');
+  	} 
   }
 
   return (
-    <div>
+    <div className="">
       <Head>
         <title>Frens</title>
         <meta name="description" content="Together on chain 4ever" />
@@ -146,8 +114,7 @@ export default function Home() {
           { !currentAccount ?
               <button 
                 className="rounded bg-red-200 hover:bg-slate-100 h-10 px-2 self-center"
-                // onClick={() => setCurrentAccount("Whatever")}
-                onClick={() => connectWallet()}
+                onClick={() => setCurrentAccount("Whatever")}
               >
                 click 2 sign in fam
               </button>
@@ -189,9 +156,9 @@ export default function Home() {
               {friends.map((friend) =>
                 <div 
                   className="flex mb-6 p-4 rounded bg-white/[.4]"
-                  key={friend.pubkey}
+                  key={friend.address}
                   >
-                  <QRCode size={150} value={friend.pubkey} />
+                  <QRCode size={150} value={friend.address} />
                   <div className="flex flex-col items-center justify-around grow">
                     <h2 
                       className="text-l sm:text-xl mb-2 font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-br bg-gradient-to-r from-rose-400 via-fuchsia-500 to-indigo-500"
@@ -200,18 +167,18 @@ export default function Home() {
                     </h2>
                     <div className="flex items-center px-4">
                       <h6 className="mr-4">
-                        {friend.pubkey.substring(0, 4) + '..' + friend.pubkey.substring(40, 42)}
+                        {friend.address.substring(0, 4) + '..' + friend.address.substring(40, 42)}
                       </h6>
                       <button 
                         className="bg-white rounded px-1 sm:p-1 border-2 border-black hover:bg-slate-100"
-                        onClick={() =>  navigator.clipboard.writeText(friend.pubkey)}
+                        onClick={() =>  navigator.clipboard.writeText(friend.address)}
                       >
                         👈 copy
                       </button>
                     </div>
                     <button 
                       className="bg-rose-500 hover:bg-red-700 text-white text-center py-2 px-4 rounded-full"
-                      onClick={() => deleteFriend(friend.pubkey)}
+                      onClick={() => deleteFriend(friend.address)}
                     >
                       remove fren
                     </button>
