@@ -1,10 +1,7 @@
-TODO
-* Filter out zero addressed accounts
-* Let the user know they're either being given a record or fetching friends when signing in
-* Loading UI for
-  * Adding frens
-  * Removing frens
-* UI for failed friend additions
-* UI for failed fren removals
-* Clean up client code 
-* Clean up contract
+# Frens🐸
+
+Frens lets you keep an on-chain fren list of ur favorite crypto buddies and their wallet addresses.
+
+It runs on rinkeby, so you only need to waste fake fake money.
+
+![app screenshot](public/app-screenshot.png)

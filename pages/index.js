@@ -9,7 +9,7 @@ import FrenList from '../components/FrenList';
 
 
 import contractAbi from '../utils/Frens.json';
-const CONTRACT_ADDRESS = "0x950EEf2c71c85F0015FC01c1540632DeeF2b8fA1";
+const CONTRACT_ADDRESS = "0xf799faef1Dfcc1835Db7f83D1187Ec9B15d4ea00";
 
 export default function Home() {  
   const [currentAccount, setCurrentAccount] = useState(null);
@@ -116,7 +116,7 @@ export default function Home() {
         style={{ background: 'hsl(328deg 58% 94%)' }}
         className="w-screen min-h-full h-screen box-border flex flex-col pt-4 font-kiddie"
         >
-          
+
         <h1 className="m-0 text-6xl text-center mb-10">frens🐸</h1>
 
 
