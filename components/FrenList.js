@@ -25,8 +25,8 @@ export default function FrenList ({ frens, setFrens, filterFrens, contractAddres
             const rc = await tx.wait();
         
             // filter out zeroed out frens
-            toast.dismiss(toastId);
             let frenList = filterFrens(rc);
+            toast.dismiss(toastId);
 
             setFrens(frenList);
         } catch(error) {

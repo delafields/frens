@@ -25,9 +25,9 @@ export default function FrenForm({ frens, setFrens, filterFrens, contractAddress
         </div>
       ))
       const rc = await tx.wait();
-  
-      toast.dismiss(toastId);
+      
       let frenList = filterFrens(rc);
+      toast.dismiss(toastId);
 
       setFrens(frenList);
       resetField("name")
@@ -43,15 +43,18 @@ export default function FrenForm({ frens, setFrens, filterFrens, contractAddress
         className="flex flex-col sm:flex-row justify-around mb-6"
         onSubmit={handleSubmit(onSubmit)}
         >
+        <div className="text-center mb-2">
         <input 
-          className="rounded pl-2 mb-2 sm:mb-0"
+          className="w-full rounded pl-2 sm:mb-0"
           placeholder="wat name" 
           {...register("name", {required: "name is required boo"})}
         />
         {errors.name && <p className="text-myred">{errors.name.message}</p>}
+        </div>
         
+        <div className="text-center mb-2">
         <input 
-          className="rounded pl-2 mb-2 sm:mb-0"
+          className=" w-full rounded pl-2 sm:mb-0"
           placeholder="wallet address" 
           {...register("address", 
             { 
@@ -73,6 +76,7 @@ export default function FrenForm({ frens, setFrens, filterFrens, contractAddress
         {errors.address?.type === "required" && <p className="text-myred">this required mane</p>}
         {(errors.address?.type === "minLength" || errors.address?.type === "maxLength") && <p className="text-myred">this needs 2b 42 chars</p>}
         {errors.address?.type === "validate" && <p className="text-myred">ser, this is already a fren</p>}
+        </div>
 
         <input 
           className="rounded-full p-2 bg-rose-500 hover:text-white hover:bg-rose-700 cursor-pointer"
