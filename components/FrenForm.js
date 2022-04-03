@@ -40,21 +40,21 @@ export default function FrenForm({ frens, setFrens, filterFrens, contractAddress
   return (
     <>
       <form 
-        className="flex flex-col sm:flex-row justify-around mb-6"
+        className="flex flex-col sm:flex-row justify-around items-center mb-6"
         onSubmit={handleSubmit(onSubmit)}
         >
-        <div className="text-center mb-2">
+        <div className="text-center mb-2 sm:mb-0">
         <input 
-          className="w-full rounded pl-2 sm:mb-0"
+          className="w-full rounded pl-2"
           placeholder="wat name" 
           {...register("name", {required: "name is required boo"})}
         />
         {errors.name && <p className="text-myred">{errors.name.message}</p>}
         </div>
         
-        <div className="text-center mb-2">
+        <div className="text-center mb-2 sm:mb-0">
         <input 
-          className=" w-full rounded pl-2 sm:mb-0"
+          className=" w-full rounded pl-2"
           placeholder="wallet address" 
           {...register("address", 
             { 
