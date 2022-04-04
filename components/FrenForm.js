@@ -47,7 +47,7 @@ export default function FrenForm({ frens, setFrens, filterFrens, contractAddress
         <input 
           className="w-full rounded pl-2"
           placeholder="wat name" 
-          {...register("name", {required: "name is required boo"})}
+          {...register("name", {required: "this required mane"})}
         />
         {errors.name && <p className="text-myred">{errors.name.message}</p>}
         </div>
