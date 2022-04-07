@@ -1,12 +1,18 @@
 import { ethers, providers } from "ethers";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from 'react-hot-toast';
 
-export default function FrenForm({ frens, setFrens, filterFrens, contractAddress, contractAbi }) {
-
+export default function FrenForm({ frens, setFrens, contractAddress, contractAbi }) {
+  const [waiting, setWaiting] = useState(false);
   const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm();
 
   const onSubmit = async newFren => {
+    if (waiting) {
+      toast.error('plz wait for last txn to be confirmed');
+      return;
+    }
+
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
@@ -14,7 +20,8 @@ export default function FrenForm({ frens, setFrens, filterFrens, contractAddress
   
       // call contract's addFren function, return a new frenList
       console.log("adding fren");
-      let tx = await contract.addfren(newFren.address, newFren.name);
+      let tx = await contract.addFren(newFren.address, newFren.name);
+      setWaiting(true);
       const toastId = toast((t) => (
         <div>
             {'adding '}
@@ -24,14 +31,16 @@ export default function FrenForm({ frens, setFrens, filterFrens, contractAddress
             {' to de blockchain...'}
         </div>
       ))
-      const rc = await tx.wait();
       
-      let frenList = filterFrens(rc);
+      const rc = await tx.wait();
+      const frenList = rc.events.find(event => event.event === "FrenListUpdated").args._frenlist;
+      setFrens(frenList);
+      setWaiting(false);
       toast.dismiss(toastId);
 
-      setFrens(frenList);
-      resetField("name")
-      resetField("address")
+      resetField("name");
+      resetField("address");
+
     } catch(error){
       console.error(error);
     }

@@ -1,10 +1,17 @@
 import { ethers, providers } from "ethers";
+import { useState } from 'react';
 import QRCode from "react-qr-code";
 import toast from 'react-hot-toast';
 
-export default function FrenList ({ frens, setFrens, filterFrens, contractAddress, contractAbi }) {
+export default function FrenList ({ frens, setFrens, contractAddress, contractAbi }) {
+    const [waiting, setWaiting] = useState(false);
     
     const deleteFren = async (address, name) => {
+        if (waiting) {
+            toast.error('plz wait for last txn to be confirmed');
+            return;
+        }
+
         try {
             const provider = new ethers.providers.Web3Provider(ethereum);
             const signer = provider.getSigner();
@@ -12,7 +19,8 @@ export default function FrenList ({ frens, setFrens, filterFrens, contractAddres
         
             // call contract's removefren function, return a new frenList 
             console.log("removing fren");
-            let tx = await contract.removefren(address);
+            let tx = await contract.removeFren(address);
+            setWaiting(true);
             const toastId = toast((t) => (
                 <div>
                     {'removing '}
@@ -22,13 +30,14 @@ export default function FrenList ({ frens, setFrens, filterFrens, contractAddres
                     {' from de blockchain...'}
                 </div>
             ));
+
             const rc = await tx.wait();
-        
-            // filter out zeroed out frens
-            let frenList = filterFrens(rc);
+            const frenList = rc.events.find(event => event.event === "FrenListUpdated").args._frenlist;
+            console.log(frenList);
+            setFrens(frenList);
+            setWaiting(false);
             toast.dismiss(toastId);
 
-            setFrens(frenList);
         } catch(error) {
             toast.error('sumthing went wrong :/')
             console.error(error);

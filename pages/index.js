@@ -9,20 +9,12 @@ import FrenList from '../components/FrenList';
 
 
 import contractAbi from '../utils/Frens.json';
-const CONTRACT_ADDRESS = "0x73CC775dfc0bE809595C4c970C82d7d96cA4Ef41";
+const CONTRACT_ADDRESS = "0x6f665F39bF77E3B331afc8352d4DC2E9B8611D9F";
 
 export default function Home() {  
   const [currentAccount, setCurrentAccount] = useState(null);
   const [frens, setFrens] = useState([]);
   const [fetchingFrens, setFetchingFrens] = useState(false);
-
-  // filters out zero addressed wallets (these are "removed" frens)
-  const filterFrens = (receipt) => {
-    const frenList = receipt.events.find(event => event.event === "FrenListUpdated").args._frenlist;
-    frenList = frenList.filter(fren => fren.pubkey != '0x0000000000000000000000000000000000000000');
-    console.log('filtered frens', frenList);
-    return frenList;
-  }
 
   const connectWallet = async () => {
     try {
@@ -70,16 +62,17 @@ export default function Home() {
         const signer = provider.getSigner();
         const contract = new ethers.Contract(CONTRACT_ADDRESS, contractAbi.abi, signer);
 
-        console.log("creating a record for this user if they're new...");
-        let tx = await contract.createOrFindNewUser();
+        console.log("logging in...");
+        let tx = await contract.login();
         const toastId = toast.loading('grabbin ur frens..one sec');
+        
         const rc = await tx.wait();
+        const frenList = rc.events.find(event => event.event === "FrenListUpdated").args._frenlist;
 
-        let frenList = filterFrens(rc);
+        setFrens(frenList);
+        setFetchingFrens(false);
         toast.dismiss(toastId);
 
-        setFetchingFrens(false);
-        setFrens(frenList)
       }
     } catch(error) {
       setCurrentAccount(null);
@@ -149,14 +142,12 @@ export default function Home() {
               <FrenForm
                 frens={frens} 
                 setFrens={setFrens} 
-                filterFrens={filterFrens} 
                 contractAddress={CONTRACT_ADDRESS}
                 contractAbi={contractAbi}
               />
               <FrenList
                 frens={frens} 
                 setFrens={setFrens} 
-                filterFrens={filterFrens} 
                 contractAddress={CONTRACT_ADDRESS} 
                 contractAbi={contractAbi}
               />
