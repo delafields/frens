@@ -46,7 +46,6 @@ contract Frens {
         _;
     }
 
-
     /// ensures no duplicate frens
     /// loops through fren records for a given user
     /// @param _pubkey The public key of a fren
@@ -70,6 +69,7 @@ contract Frens {
     /// @param _name The name provided by the user for this fren
     function addfren(address _pubkey, string calldata _name) external isAppUser {      
         require(checkIfAlreadyAfren(_pubkey) == false, "m'boi, this address is already a fren");
+        require(_pubkey != address(0), "new fren can't be address 0 dood");
         // require(userList[msg.sender].frenList.length < 20, "max 20 frens homie, we saving gas over here");
 
         // create new fren
@@ -85,7 +85,8 @@ contract Frens {
     /// @param _pubkey The public key of a fren
     function removefren(address _pubkey) external isAppUser {
         require(checkIfAlreadyAfren(_pubkey) == true, "u must rly hate this person, they're not even on ur frens list");
-
+        require(_pubkey != address(0), "new fren can't be address 0 dood");
+        
         // loop through fren list, remove the bad guy
         uint numfrens = userList[msg.sender].frenList.length;
         // uint evilfrenIndex;

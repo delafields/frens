@@ -9,7 +9,7 @@ import FrenList from '../components/FrenList';
 
 
 import contractAbi from '../utils/Frens.json';
-const CONTRACT_ADDRESS = "0xf799faef1Dfcc1835Db7f83D1187Ec9B15d4ea00";
+const CONTRACT_ADDRESS = "0x73CC775dfc0bE809595C4c970C82d7d96cA4Ef41";
 
 export default function Home() {  
   const [currentAccount, setCurrentAccount] = useState(null);
