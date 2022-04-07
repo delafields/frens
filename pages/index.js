@@ -6,6 +6,7 @@ import { ethers, providers } from "ethers";
 import toast, { Toaster } from 'react-hot-toast';
 import FrenForm from '../components/FrenForm';
 import FrenList from '../components/FrenList';
+import Ribbit from '../components/Ribbit';
 
 
 import contractAbi from '../utils/Frens.json';
@@ -110,8 +111,7 @@ export default function Home() {
         className="w-screen min-h-full h-screen box-border flex flex-col pt-4 font-kiddie"
         >
 
-        <h1 className="m-0 text-6xl text-center mb-10">frens🐸</h1>
-
+        <Ribbit/>
 
         <div className="grow flex justify-center align-center max-w-full">
           { !currentAccount
@@ -128,6 +128,7 @@ export default function Home() {
                 <p>confirm this transaction</p>
                 <p>so I can fetch your frens</p>
                 <p className="text-xs">(if u have any)</p>
+                <p className="text-xs mt-12">...you can click the frog while u wait..</p>
               </div>
             :
             <div 
