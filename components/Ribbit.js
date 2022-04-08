@@ -18,11 +18,17 @@ export default function Ribbit() {
     };
 
     return (
-        <h1 
-          className="m-0 text-6xl text-center mb-10 cursor-pointer"
-          onClick={handleRibbit}
-          >
-            frens🐸
-        </h1>
+        <div className="flex justify-center m-0 text-6xl text-center mb-10">
+            <h1>
+            frens
+            </h1>
+            <h1 
+            className="cursor-pointer"
+            onClick={handleRibbit}
+            onMouseEnter={handleRibbit}
+            >
+            🐸
+            </h1>
+        </div>
     )
 }
