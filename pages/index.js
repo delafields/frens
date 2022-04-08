@@ -128,7 +128,7 @@ export default function Home() {
                 <p>confirm this transaction</p>
                 <p>so I can fetch your frens</p>
                 <p className="text-xs">(if u have any)</p>
-                <p className="text-xs mt-12">...you can click the frog while u wait..</p>
+                <p className="text-xs mt-12">...u can tickle 🐸 while u wait..</p>
               </div>
             :
             <div 
