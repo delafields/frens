@@ -73,7 +73,8 @@ contract Frens {
     /// @dev we require this to be called by an "AppUser" and to be a new fren
     /// @param _pubkey The public key of a fren
     /// @param _name The name provided by the user for this fren
-    function addFren(address _pubkey, string calldata _name) external isAppUser {      
+    function addFren(address _pubkey, string calldata _name) external isAppUser {  
+        require(userList[msg.sender].frenList.length + 1 <= 20, "max 20 friends homie");    
         (bool frenExists, ) = lookForFren(_pubkey);
         require(frenExists == false, "m'boi, this address is already a fren");
         if (_pubkey == address(0)) revert ZeroAddress({errorMessage: "fren can't be address 0 dood"});

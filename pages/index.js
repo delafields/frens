@@ -10,7 +10,7 @@ import Ribbit from '../components/Ribbit';
 
 
 import contractAbi from '../utils/Frens.json';
-const CONTRACT_ADDRESS = "0x6f665F39bF77E3B331afc8352d4DC2E9B8611D9F";
+const CONTRACT_ADDRESS = "0xcF4866F6BF8Cb5364CCd4b4b2dF7dF00797D565C";
 
 export default function Home() {  
   const [currentAccount, setCurrentAccount] = useState(null);
@@ -113,7 +113,10 @@ export default function Home() {
 
         <Ribbit/>
 
-        <div className="grow flex justify-center align-center max-w-full">
+        <div 
+          style={{ background: 'hsl(328deg 58% 94%)' }}
+          className="grow flex justify-center align-center max-w-full"
+        >
           { !currentAccount
             ? 
             <button 
