@@ -13,6 +13,11 @@ export default function FrenForm({ frens, setFrens, contractAddress, contractAbi
       return;
     }
 
+    if (frens.length + 1 >= 20) {
+      toast.error('20 friends max mate');
+      return;
+    }
+
     try {
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
